@@ -354,7 +354,15 @@ X-Title: ${OPENROUTER_APP_TITLE:-Aeon}"
     # from cache, 0.00003 USD for a turn that costs 0.0017 on a model that does
     # not cache). hivemindos/auto, or any catalog id, is one variable away.
     require_secret HIVEMINDOS_CREDIT_TOKEN
-    hivemindos_model="${HIVEMINDOS_MODEL:-${MODEL:-$HIVEMINDOS_DEFAULT_MODEL}}"
+    # A skill's own model wins when it is a catalog id (vendor/model, or a
+    # HivemindOS agent brain such as hivemindos/agent:hivepunk:12): one
+    # automation can think as a chosen agent while the engine's other
+    # automations keep HIVEMINDOS_MODEL. aeon's native ids (claude-*, grok-*,
+    # the top-level default) carry no slash and still defer to HIVEMINDOS_MODEL.
+    case "${MODEL:-}" in
+      */*) hivemindos_model="$MODEL" ;;
+      *) hivemindos_model="${HIVEMINDOS_MODEL:-${MODEL:-$HIVEMINDOS_DEFAULT_MODEL}}" ;;
+    esac
     case "$hivemindos_model" in claude-*|grok-*|"") hivemindos_model="$HIVEMINDOS_DEFAULT_MODEL" ;; esac
     start_ccr_sidecar hivemindos \
       "${HIVEMINDOS_BASE_URL:-https://hivemindos-paid-agent-gateway.hivemindos.workers.dev/api/paid-agents/default}/chat/completions" \
