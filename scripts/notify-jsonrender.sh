@@ -63,6 +63,7 @@ SPEC=$(echo "$CONTENT" | claude -p "Convert this skill output into a json-render
   --model claude-haiku-4-5-20251001 \
   --system-prompt "$SYSTEM" \
   --max-turns 1 \
+  --strict-mcp-config \
   --output-format text 2>/dev/null)
 
 # Strip markdown fences if Haiku wraps them
